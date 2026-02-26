@@ -1,0 +1,10 @@
+{
+    "name": "Web Widget",
+    "slug": "web-widget",
+    "description": "Embeddable JavaScript widget for websites with contact form and KB search",
+    "version": "0.1.0",
+    "author": "Escalated",
+    "author_url": "https://github.com/escalated-dev",
+    "requires": "0.6.0",
+    "main_file": "Plugin.php"
+}
