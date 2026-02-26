@@ -434,6 +434,7 @@ import { ref, reactive, computed, inject, onMounted, watch } from 'vue';
 import WidgetPreview from './WidgetPreview.vue';
 
 const isDark = inject('esc-dark', false);
+const webWidget = inject('webWidget', null);
 
 // ---------------------------------------------------------------------------
 // State
@@ -670,10 +671,12 @@ async function handleSave() {
     saveSuccess.value = false;
 
     try {
-        // In production this calls the backend API:
-        //   await apiRequest('/settings', { method: 'POST', body: config });
-        // For now, simulate a save delay
-        await new Promise((resolve) => setTimeout(resolve, 600));
+        if (webWidget) {
+            await webWidget.saveSettings({ ...config });
+        } else {
+            throw new Error('Web Widget service not available.');
+        }
+
         saveSuccess.value = true;
         setTimeout(() => { saveSuccess.value = false; }, 3000);
     } catch (err) {
@@ -688,21 +691,16 @@ async function handleSave() {
 // ---------------------------------------------------------------------------
 
 onMounted(async () => {
-    // In production, fetch real settings:
-    //   const service = inject('webWidget');
-    //   if (service) {
-    //       await service.fetchSettings();
-    //       Object.assign(config, service.state.settings);
-    //   }
+    if (webWidget) {
+        await webWidget.fetchSettings();
+        const s = webWidget.state.settings;
+        Object.assign(config, s);
+        if (s.colors) Object.assign(config.colors, s.colors);
+    }
 
-    // Generate a placeholder API key if empty
-    if (!config.api_key) {
-        const chars = 'abcdef0123456789';
-        let key = 'esc_wk_';
-        for (let i = 0; i < 32; i++) {
-            key += chars[Math.floor(Math.random() * chars.length)];
-        }
-        config.api_key = key;
+    if (!config.api_key && webWidget) {
+        const key = await webWidget.regenerateApiKey();
+        if (key) config.api_key = key;
     }
 });
 </script>
