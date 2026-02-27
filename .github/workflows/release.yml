@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read plugin metadata
+        id: meta
+        run: |
+          echo "version=$(jq -r .version plugin.json)" >> "$GITHUB_OUTPUT"
+          echo "slug=$(jq -r .slug plugin.json)" >> "$GITHUB_OUTPUT"
+          echo "name=$(jq -r .name plugin.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Create release ZIP
+        run: |
+          zip -r "escalated-plugin-${{ steps.meta.outputs.slug }}-${{ steps.meta.outputs.version }}.zip" . \
+            -x ".git/*" ".github/*" "TODO.md" "node_modules/*"
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="v${{ steps.meta.outputs.version }}"
+          ZIP="escalated-plugin-${{ steps.meta.outputs.slug }}-${{ steps.meta.outputs.version }}.zip"
+
+          # Remove existing release and tag so we always publish from HEAD
+          gh release delete "$VERSION" --yes 2>/dev/null || true
+          git push origin ":refs/tags/$VERSION" 2>/dev/null || true
+
+          # Create fresh release
+          gh release create "$VERSION" "$ZIP" \
+            --title "${{ steps.meta.outputs.name }} $VERSION" \
+            --generate-notes \
+            --latest
