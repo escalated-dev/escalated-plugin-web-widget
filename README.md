@@ -1,31 +1,32 @@
-# Escalated Plugin: Web Widget
+# @escalated-dev/plugin-web-widget
 
-Embeddable JavaScript widget that adds a customer support interface to any website, featuring a contact form for ticket submission and knowledge base article search for self-service resolution.
+Embeddable website support widget for ticket submission. Visitors on your customer-facing website can submit tickets directly via a configurable chat-style widget.
 
-## Features (Planned)
-- Lightweight embeddable JavaScript widget
-- Contact form with customizable fields
-- Knowledge base article search and display
-- Visual configurator with live preview
-- Color scheme and branding customization
-- Position and behavior settings
-- Embed code generator
-- Spam protection (honeypot, reCAPTCHA)
-- File upload support
-- Mobile responsive design
-- Shadow DOM isolation (no CSS conflicts)
-- Widget usage analytics
+## Features
 
-## Installation
+- API key generated on activation — required for all widget requests
+- Configurable branding: title, primary color, position, greeting
+- Custom fields support
+- Rate limiting per IP with configurable window and max tickets
+- CORS origin allowlist
+- Automatic contact creation/lookup by email
+- Stale rate limit record cleanup (hourly cron)
+- Admin configurator UI injected into Settings > Channels
 
-### Via ZIP Upload
-1. Download the latest release ZIP from this repository
-2. In Escalated admin, go to **Settings > Plugins**
-3. Click **Upload Plugin** and select the ZIP file
-4. Activate the plugin from the plugins list
+## Hooks
 
-### Requirements
-- Escalated >= 0.6.0
+| Type | Hook | Description |
+|------|------|-------------|
+| Action | `web_widget.ticket_created` | Logs ticket creation via widget |
+| Filter | `ticket.channels` | Registers Web Widget as a ticket source channel |
+| Filter | `ticket.sources` | Registers Web Widget as a ticket source |
+| Cron | `every:1h` | Cleans up expired rate limit records |
 
-## Status
-This plugin is in early development. See TODO.md for implementation status.
+## Endpoints
+
+| Method | Path | Capability |
+|--------|------|-----------|
+| GET | `/config` | public (API key required) |
+| POST | `/submit` | public (X-Widget-Key required) |
+| GET | `/embed.js` | public |
+| GET/POST | `/settings` | `manage_settings` |

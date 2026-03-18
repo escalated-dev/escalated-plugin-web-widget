@@ -1,11 +1,17 @@
 {
-    "name": "@escalated-dev/escalated-plugin-web-widget",
-    "version": "0.1.0",
-    "description": "Embeddable JavaScript widget for websites with contact form and KB search",
-    "main": "src/index.js",
-    "peerDependencies": {
-        "@escalated-dev/escalated": "^0.6.0",
-        "vue": "^3.4.0"
-    },
-    "keywords": ["escalated", "plugin", "web-widget", "embed", "contact-form", "knowledge-base", "self-service"]
+  "name": "@escalated-dev/plugin-web-widget",
+  "version": "0.1.0",
+  "description": "Embeddable website support widget for ticket submission — TypeScript SDK version",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@escalated-dev/plugin-sdk": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
 }
