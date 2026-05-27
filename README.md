@@ -1,5 +1,7 @@
 # Escalated Plugin: Web Widget
 
+**Website:** [escalated.dev](https://escalated.dev)
+
 Embeddable website support widget that allows visitors to submit tickets directly from your customer-facing website. Includes configurable branding, custom fields, rate limiting, and CORS origin restrictions.
 
 ## Features
