@@ -68,4 +68,4 @@ npm install @escalated-dev/plugin-web-widget
 
 ## License
 
-MIT
+MIT - Copyright (c) Escalated.dev. See [LICENSE](LICENSE).
