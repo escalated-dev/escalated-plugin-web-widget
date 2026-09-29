@@ -1,7 +1,8 @@
 {
   "name": "@escalated-dev/plugin-web-widget",
   "version": "0.1.0",
-  "description": "Embeddable website support widget for ticket submission — TypeScript SDK version",
+  "description": "Unreleased experimental support widget prototype; not available for merchant use",
+  "private": true,
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
