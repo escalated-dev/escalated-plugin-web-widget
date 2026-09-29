@@ -1,70 +1,42 @@
 # Escalated Plugin: Web Widget
 
-[![Views](https://hits.sh/github.com/escalated-dev/escalated-plugin-web-widget.svg?style=flat&label=views&color=007ec6)](https://hits.sh/github.com/escalated-dev/escalated-plugin-web-widget/)
+**Status: unreleased experimental prototype. Not available for merchant or public use.**
 
-**Website:** [escalated.dev](https://escalated.dev)
+This repository contains an incomplete plugin implementation. The version in
+`package.json` is a development version, not a claim of release readiness.
+`private: true` prevents accidental npm publication while the plugin is incomplete.
+There is no supported installation or embed snippet yet.
 
-Embeddable website support widget that allows visitors to submit tickets directly from your customer-facing website. Includes configurable branding, custom fields, rate limiting, and CORS origin restrictions.
+The built-in widget supplied by some Escalated backends is a separate feature.
+Its availability and security guarantees must be checked for the selected backend.
 
-## Features
+## Known gaps
 
-- API key auto-generated on activation for secure widget requests
-- Configurable branding: title, primary color, position, greeting message
-- Custom fields support for gathering additional information
-- Per-IP rate limiting with configurable window and max tickets
-- CORS origin allowlist for restricting widget access
-- Automatic contact creation or lookup by email
-- Embed script snippet generation
-- Stale rate limit record cleanup via hourly cron
-- Admin configurator UI injected into Settings > Channels
+- `frontend/index.js` points to a JavaScript module that is not shipped.
+- The advertised `widget.js` bundle and `WebWidgetConfigurator` component are absent.
+- `allowed_origins` is read from settings but is not enforced. It provides no
+  CORS protection in this prototype.
+- The public endpoint, raw request/response and ticket-creation contracts need
+  integration with the plugin bridge. Declared handlers are not working public APIs.
+- The current rate limiter uses non-atomic storage and untrusted forwarded IP
+  headers. A public embed key does not authenticate a recipient.
+- Tenant routing, verified recipient access and end-to-end browser tests are missing.
 
-## Configuration
+The branding, custom fields, endpoints and configurator declared in source describe
+work in progress. They are not supported features.
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `api_key` | password | No | Widget API key, auto-generated on activation. Include in the embed script. |
-| `title` | text | No | Widget title displayed to visitors. Defaults to `Support`. |
-| `primary_color` | text | No | Primary brand color (hex). Defaults to `#4f46e5`. |
-| `position` | select | No | Widget position: `bottom-right` or `bottom-left`. Defaults to `bottom-right`. |
-| `greeting` | textarea | No | Greeting message displayed in the widget. |
-| `show_avatar` | boolean | No | Show agent avatar in the widget. Defaults to `true`. |
-| `allowed_origins` | json | No | CORS allowlist array. Use `["*"]` to allow all origins. |
-| `custom_fields` | json | No | Array of `{ key, label, type, required }` custom field definitions. |
-| `rate_limit` | json | No | Rate limit config: `{ max_tickets, window_minutes }`. Defaults to 5 tickets per 60 minutes. |
-| `default_department_id` | text | No | Default department ID for widget-submitted tickets. |
-| `default_priority` | select | No | Default ticket priority: `low`, `normal`, or `high`. Defaults to `normal`. |
+## Release criteria
 
-## Admin Pages
+Before removing the unreleased status:
 
-- **admin/web-widget** — Configure widget appearance, custom fields, rate limits, and get the embed code.
-
-## Hooks
-
-### Actions
-- `web_widget.ticket_created` — Fires when a ticket is submitted via the widget.
-
-### Filters
-- `ticket.channels` — Registers Web Widget as an available ticket channel.
-- `ticket.sources` — Registers Web Widget as a ticket source.
-
-### Cron
-- `every:1h` — Cleans up expired rate limit records.
-
-## Endpoints
-
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/config` | Public endpoint returning widget display config (requires API key query param). |
-| POST | `/submit` | Public endpoint for ticket submission (requires X-Widget-Key header). |
-| GET | `/embed.js` | Returns the embeddable JavaScript snippet. |
-| GET | `/settings` | Get plugin configuration. |
-| POST | `/settings` | Save plugin configuration. |
-
-## Installation
-
-```bash
-npm install @escalated-dev/plugin-web-widget
-```
+1. Ship and test the packed frontend, configurator and embeddable script.
+2. Enforce an explicit Origin allowlist and preflight policy at the public boundary.
+3. Add trusted, atomic rate limiting and server-side validation of every submission.
+4. Create tickets through the authorized, tenant-aware backend service and verify
+   recipient identity before granting access to correspondence.
+5. Exercise the published artifact from a different browser origin, including
+   denied origins, expired access, retries and disabled-widget behavior.
+6. Document the supported backend and SDK/runtime versions, then publish a release.
 
 ## License
 

@@ -84,7 +84,7 @@ async function getSettings(ctx: PluginContext): Promise<WidgetSettings> {
 export default definePlugin({
     name: 'web-widget',
     version: '0.1.0',
-    description: 'Embeddable website support widget for ticket submission with configurable branding, custom fields, and rate limiting',
+    description: 'Unreleased experimental widget prototype; not available for merchant use',
 
     config: [
         { name: 'api_key', label: 'Widget API Key', type: 'password',
